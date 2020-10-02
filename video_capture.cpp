@@ -9,6 +9,7 @@
 using namespace cv;
 using namespace std;
 
+
 void init_video_capture()
 {
     open_device();
@@ -30,9 +31,9 @@ void set_frame_buffer() {
 Mat get_frame_from_file()
 {
     FILE *f = fopen("frame.bin", "rb");
-    fread(my_frame, 614400, 1, f);
-    Mat fr_test(480, 640, CV_8UC2, (void *)&my_frame);
-    Mat bgr_img(480, 640, CV_8UC3);
+    fread(my_frame, WIDTH * HEIGHT * 2, 1, f);
+    Mat fr_test(HEIGHT, WIDTH, CV_8UC2, (void *)&my_frame);
+    Mat bgr_img(HEIGHT, WIDTH, CV_8UC3);
     cvtColor(fr_test, bgr_img, COLOR_YUV2BGR_YUYV);
     fclose(f);
     return bgr_img;
@@ -40,15 +41,15 @@ Mat get_frame_from_file()
 
 
 Mat get_frame() {
-    Mat fr_test(480, 640, CV_8UC2, (void *)&my_frame);
-    Mat bgr_img(480, 640, CV_8UC3);
+    Mat fr_test(HEIGHT, WIDTH, CV_8UC2, (void *)&my_frame);
+    Mat bgr_img(HEIGHT, WIDTH, CV_8UC3);
     cvtColor(fr_test, bgr_img, COLOR_YUV2BGR_YUYV);
     return bgr_img;
 }
 
 int main(int, char **)
 {
-    Mat frame(480, 640, CV_8UC3), frame1(512, 512, 0);
+    Mat frame(HEIGHT, WIDTH, CV_8UC3), frame1(512, 512, 0);
 
     //--- INITIALIZE VIDEOCAPTURE
     //VideoCapture cap;
@@ -83,7 +84,7 @@ int main(int, char **)
         //frame = get_frame_from_file();
         frame = get_frame();
         imshow("Live", frame);
-        if (waitKey(1) >= 0)
+        if (waitKey(10) >= 0)
             break;
     }
     clear_video_capture();

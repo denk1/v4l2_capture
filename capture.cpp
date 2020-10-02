@@ -511,10 +511,12 @@ void init_device(void)
 	CLEAR(fmt);
 
 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	if (force_format)
+	
+	//if (force_format)
+	if(1)
 	{
-		fmt.fmt.pix.width = 640;
-		fmt.fmt.pix.height = 480;
+		fmt.fmt.pix.width = WIDTH;
+		fmt.fmt.pix.height = HEIGHT;
 		fmt.fmt.pix.pixelformat = V4L2_PIX_FMT_YUYV;
 		fmt.fmt.pix.field = V4L2_FIELD_INTERLACED;
 
@@ -530,6 +532,8 @@ void init_device(void)
 			errno_exit("VIDIOC_G_FMT");
 	}
 
+	
+	printf("test2\n");
 	/* Buggy driver paranoia. */
 	min = fmt.fmt.pix.width * 2;
 	if (fmt.fmt.pix.bytesperline < min)
@@ -537,6 +541,9 @@ void init_device(void)
 	min = fmt.fmt.pix.bytesperline * fmt.fmt.pix.height;
 	if (fmt.fmt.pix.sizeimage < min)
 		fmt.fmt.pix.sizeimage = min;
+	
+	printf("width=%d\n", fmt.fmt.pix.width);
+	printf("height=%d\n", fmt.fmt.pix.height);
 
 	switch (io)
 	{
