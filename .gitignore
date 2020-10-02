@@ -1,0 +1,6 @@
+*.bin
+backup_capture/
+build/
+.vscode/
+capture
+video_capture
