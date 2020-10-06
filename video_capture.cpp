@@ -9,11 +9,10 @@
 using namespace cv;
 using namespace std;
 
-
-void init_video_capture()
+void init_video_capture(const char *device_name)
 {
-    open_device();
-    init_device();
+    open_device(device_name);
+    init_device(device_name);
     start_capturing();
 }
 
@@ -24,8 +23,8 @@ void clear_video_capture()
     close_device();
 }
 
-void set_frame_buffer() {
-
+void set_frame_buffer()
+{
 }
 
 Mat get_frame_from_file()
@@ -39,8 +38,8 @@ Mat get_frame_from_file()
     return bgr_img;
 }
 
-
-Mat get_frame() {
+Mat get_frame()
+{
     Mat fr_test(HEIGHT, WIDTH, CV_8UC2, (void *)&my_frame);
     Mat bgr_img(HEIGHT, WIDTH, CV_8UC3);
     cvtColor(fr_test, bgr_img, COLOR_YUV2BGR_YUYV);
@@ -69,7 +68,7 @@ int main(int, char **)
     //--- GRAB AND WRITE LOOP
     cout << "Start grabbing" << endl
          << "Press any key to terminate" << endl;
-    init_video_capture();
+    init_video_capture("/dev/video2");
     for (;;)
     {
         // wait for a new frame from camera and store it into 'frame'
@@ -84,7 +83,7 @@ int main(int, char **)
         //frame = get_frame_from_file();
         frame = get_frame();
         imshow("Live", frame);
-        if (waitKey(10) >= 0)
+        if (waitKey(1) >= 0)
             break;
     }
     clear_video_capture();

@@ -55,12 +55,13 @@ static void process_image(const void *p, int size)
 	fflush(stdout);
 }
 
-static void set_frame_buffer(const void *p, int size) {
-	memcpy((void*)&my_frame, p, size);
+static void set_frame_buffer(const void *p, int size)
+{
+	memcpy((void *)&my_frame, p, size);
 	//memset((void*)&my_frame, 10, size);
 }
 
-int  read_frame(void)
+int read_frame(void)
 {
 	struct v4l2_buffer buf;
 	unsigned int i;
@@ -316,7 +317,7 @@ static void init_read(unsigned int buffer_size)
 	}
 }
 
-static void init_mmap(void)
+static void init_mmap(const char *dev_name)
 {
 	struct v4l2_requestbuffers req;
 
@@ -382,7 +383,7 @@ static void init_mmap(void)
 	}
 }
 
-static void init_userp(unsigned int buffer_size)
+static void init_userp(unsigned int buffer_size, const char *dev_name)
 {
 	struct v4l2_requestbuffers req;
 
@@ -428,7 +429,7 @@ static void init_userp(unsigned int buffer_size)
 	}
 }
 
-void init_device(void)
+void init_device(const char *dev_name)
 {
 	struct v4l2_capability cap;
 	struct v4l2_cropcap cropcap;
@@ -511,9 +512,9 @@ void init_device(void)
 	CLEAR(fmt);
 
 	fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
-	
+
 	//if (force_format)
-	if(1)
+	if (1)
 	{
 		fmt.fmt.pix.width = WIDTH;
 		fmt.fmt.pix.height = HEIGHT;
@@ -532,7 +533,6 @@ void init_device(void)
 			errno_exit("VIDIOC_G_FMT");
 	}
 
-	
 	printf("test2\n");
 	/* Buggy driver paranoia. */
 	min = fmt.fmt.pix.width * 2;
@@ -541,7 +541,7 @@ void init_device(void)
 	min = fmt.fmt.pix.bytesperline * fmt.fmt.pix.height;
 	if (fmt.fmt.pix.sizeimage < min)
 		fmt.fmt.pix.sizeimage = min;
-	
+
 	printf("width=%d\n", fmt.fmt.pix.width);
 	printf("height=%d\n", fmt.fmt.pix.height);
 
@@ -552,11 +552,11 @@ void init_device(void)
 		break;
 
 	case IO_METHOD_MMAP:
-		init_mmap();
+		init_mmap(dev_name);
 		break;
 
 	case IO_METHOD_USERPTR:
-		init_userp(fmt.fmt.pix.sizeimage);
+		init_userp(fmt.fmt.pix.sizeimage, dev_name);
 		break;
 	}
 }
@@ -569,7 +569,7 @@ void close_device(void)
 	fd = -1;
 }
 
-void open_device(void)
+void open_device(const char *dev_name)
 {
 	struct stat st;
 	printf("test %s\n", dev_name);
@@ -611,7 +611,7 @@ static void usage(FILE *fp, int argc, char **argv)
 			"-f | --format        Force format to 640x480 YUYVn"
 			"-c | --count         Number of frames to grab [%i]n"
 			"",
-			argv[0], dev_name, frame_count);
+			argv[0], "dev name", frame_count);
 }
 
 static const char short_options[] = "d:hmruofc:";
