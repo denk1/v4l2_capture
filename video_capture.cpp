@@ -5,6 +5,7 @@
 #include <iostream>
 #include <stdio.h>
 #include "capture.h"
+#include "VideoCapture.h"
 
 using namespace cv;
 using namespace std;
@@ -46,10 +47,19 @@ Mat get_frame()
     return bgr_img;
 }
 
+Mat get_frame(low_level::VideoCapture &videoCapture)
+{
+    Mat fr_test(HEIGHT, WIDTH, CV_8UC2, (void *)&videoCapture.get_buff()[0]);
+    Mat bgr_img(HEIGHT, WIDTH, CV_8UC3);
+    cvtColor(fr_test, bgr_img, COLOR_YUV2BGR_YUYV);
+    return bgr_img;
+}
+
 int main(int, char **)
 {
-    Mat frame(HEIGHT, WIDTH, CV_8UC3), frame1(512, 512, 0);
-
+    Mat frame(HEIGHT, WIDTH, CV_8UC3), frame1(512, 512, 0), frame2(HEIGHT, WIDTH, CV_8UC3);
+    low_level::VideoCapture videoCapture("/dev/video0", 600, 800);
+    low_level::VideoCapture videoCapture2("/dev/video2", 600, 800);
     //--- INITIALIZE VIDEOCAPTURE
     //VideoCapture cap;
     // open the default camera using default API
@@ -68,7 +78,7 @@ int main(int, char **)
     //--- GRAB AND WRITE LOOP
     cout << "Start grabbing" << endl
          << "Press any key to terminate" << endl;
-    init_video_capture("/dev/video2");
+    ////init_video_capture("/dev/video0");
     for (;;)
     {
         // wait for a new frame from camera and store it into 'frame'
@@ -79,14 +89,19 @@ int main(int, char **)
         //    break;
         // }
         // show live and wait for a key with timeout long enough to show images
-        main_step();
+        ////main_step();
+        videoCapture.read_frame();
+        videoCapture2.read_frame();
         //frame = get_frame_from_file();
-        frame = get_frame();
+        ///frame = get_frame();
+        frame = get_frame(videoCapture);
+        frame2 = get_frame(videoCapture2);
         imshow("Live", frame);
+        imshow("Live2", frame2);
         if (waitKey(1) >= 0)
             break;
     }
-    clear_video_capture();
+    ///clear_video_capture();
     // the camera will be deinitialized automatically in VideoCapture destructor
     return 0;
 }
